@@ -1,3 +1,6 @@
+import './styles/thema.css';
+import './styles/global.css';
+
 export function App() {
     console.log('oiiii');
     return (
