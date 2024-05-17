@@ -23,4 +23,3 @@ export function App() {
     // console.log('APP', state);
     return <Home state={state} setState={setState} />;
 }
-
