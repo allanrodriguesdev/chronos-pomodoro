@@ -3,21 +3,51 @@ import { Cycles } from '../Cycles';
 import { DefaultInput } from '../DeafultInput';
 import { DefaultButton } from '../DefaultButton';
 import { useRef } from 'react';
+import { TaskModel } from '../../models/TaskModel';
+import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 
 
 
 
 export function MainForm() {
-
+    const { setState } = useTaskContext();
     const taskNameInput = useRef<HTMLInputElement>(null);
 
     function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
+        if(taskNameInput.current === null) return;
 
+        const taskName = taskNameInput.current.value.trim();
+        if(!taskName){
+            alert('digite o nome da tarefa')
+            return
+        }
         
+        const newTask: TaskModel = {
+            id: Date.now().toString(),
+            name: taskName,
+            startDate: Date.now(),
+            completeDate: null,
+            interruptDate: null,
+            durantion: 1,
+            type: 'workTime',
+        }
+        const secondsRemaining = newTask.durantion * 60;
+        setState(prevState => {
+            return {
+                ...prevState,
+                config: {...prevState.config},
+                activeTask: newTask,
+                currentCycle: 1, //conferir
+                secondsRemaining, //conferir
+                formattedSecondsRemaining: '00:00',
+                tasks: [...prevState.tasks, newTask]
+             
 
-        console.log(taskNameInput.current ? taskNameInput.current.value : '');
+            }
+        });
     }
+
     return (
         <form onSubmit={handleCreateNewTask} className='form' action=''>
             <div className='formRow'>
