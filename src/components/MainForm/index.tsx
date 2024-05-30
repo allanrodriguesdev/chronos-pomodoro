@@ -7,6 +7,7 @@ import { TaskModel } from '../../models/TaskModel';
 import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { getNextCycle } from '../../utils/getNextCycles';
 import { getNextCycleType } from '../../utils/getNextCycleType';
+import { fortmatSecondsToMinutes } from '../../utils/fortmatSecondsToMinutes';
 
 
 
@@ -19,39 +20,34 @@ export function MainForm() {
     const nextCycle = getNextCycle(state.currentCycle);
     const nextCycleType = getNextCycleType(nextCycle);
 
-    console.log(nextCycle);
-
     function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if(taskNameInput.current === null) return;
+        if (taskNameInput.current === null) return;
 
         const taskName = taskNameInput.current.value.trim();
-        if(!taskName){
+        if (!taskName) {
             alert('digite o nome da tarefa')
             return
         }
-        
         const newTask: TaskModel = {
             id: Date.now().toString(),
             name: taskName,
             startDate: Date.now(),
             completeDate: null,
             interruptDate: null,
-            durantion: 1,
+            duration: state.config[nextCycleType],
             type: nextCycleType,
         }
-        const secondsRemaining = newTask.durantion * 60;
+        const secondsRemaining = newTask.duration * 60;
         setState(prevState => {
             return {
                 ...prevState,
-                config: {...prevState.config},
+                config: { ...prevState.config },
                 activeTask: newTask,
                 currentCycle: nextCycle,
                 secondsRemaining, //conferir
-                formattedSecondsRemaining: '00:00',
+                formattedSecondsRemaining: fortmatSecondsToMinutes(secondsRemaining),
                 tasks: [...prevState.tasks, newTask]
-             
-
             }
         });
     }
@@ -68,18 +64,21 @@ export function MainForm() {
                 />
             </div>
 
-            <div className='formRow'>
-                <p>Próximo intervalo é de 25min</p>
-            </div>
 
             <div className='formRow'>
-                <Cycles />
+                <p>Próximo intervalo é de {state.activeTask?.duration ?? 25}min</p>
             </div>
 
+            {state.currentCycle > 0 && (
+                <>
+                    <div className='formRow'>
+                        <Cycles />
+                    </div>
+                </>
+            )}
             <div className='formRow'>
                 <DefaultButton icon={<PlayCircleIcon />} />
             </div>
         </form>
     );
-
 }
