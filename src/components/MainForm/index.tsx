@@ -1,4 +1,4 @@
-import { PlayCircleIcon } from 'lucide-react';
+import { PlayCircleIcon, StopCircleIcon } from 'lucide-react';
 import { Cycles } from '../Cycles';
 import { DefaultInput } from '../DeafultInput';
 import { DefaultButton } from '../DefaultButton';
@@ -48,7 +48,24 @@ export function MainForm() {
                 secondsRemaining, //conferir
                 formattedSecondsRemaining: fortmatSecondsToMinutes(secondsRemaining),
                 tasks: [...prevState.tasks, newTask]
-            }
+            };
+        });
+    }
+
+    function handleInterruptTask() {
+        // event.preventDefault();
+        setState(prevState => {
+            return {
+                ...prevState,
+                activeTask: null,
+                secondsRemaining: 0, //conferir
+                formattedSecondsRemaining: '00:00',
+                tasks: prevState.tasks.map(task => {
+                    if(prevState.activeTask?.id === task.id){
+                        return {...task, interruptDate: Date.now()}
+                    } return task;
+                })
+            };
         });
     }
 
@@ -61,6 +78,7 @@ export function MainForm() {
                     type='text'
                     placeholder='Digite algo'
                     ref={taskNameInput}
+                    disabled={!!state.activeTask}
                 />
             </div>
 
@@ -77,7 +95,28 @@ export function MainForm() {
                 </>
             )}
             <div className='formRow'>
-                <DefaultButton icon={<PlayCircleIcon />} />
+                {!state.activeTask && (
+                    <DefaultButton
+                        key={'btn-submit'}
+                        aria-label='Iniciar nova tarefa'
+                        title='Iniciar nova tarefa'
+                        type="submit"
+                        icon={<PlayCircleIcon />}
+                    />
+                )}
+
+                {!!state.activeTask && (
+                    <DefaultButton
+                        key={'btn-button'}
+                        aria-label='Interromper tarefa atual'
+                        title='Interromper tarefa atual'
+                        type="button"
+                        color='red'
+                        icon={<StopCircleIcon />}
+                        onClick={handleInterruptTask}
+                    />
+
+                )}
             </div>
         </form>
     );
