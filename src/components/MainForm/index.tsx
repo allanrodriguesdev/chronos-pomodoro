@@ -8,6 +8,8 @@ import { useTaskContext } from '../../contexts/TaskContext/useTaskContext';
 import { getNextCycle } from '../../utils/getNextCycles';
 import { getNextCycleType } from '../../utils/getNextCycleType';
 import { TaskActionTypes } from '../../contexts/TaskContext/taskActions';
+import { Tips } from '../Tips';
+import { showMessage } from '../../adapters/showMessage';
 
 
 
@@ -20,13 +22,16 @@ export function MainForm() {
     const nextCycle = getNextCycle(state.currentCycle);
     const nextCycleType = getNextCycleType(nextCycle);
 
+
+
     function handleCreateNewTask(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (taskNameInput.current === null) return;
 
         const taskName = taskNameInput.current.value.trim();
         if (!taskName) {
-            alert('digite o nome da tarefa')
+            showMessage.dismiss()
+            showMessage.warn('digite o nome da tarefa')
             return
         }
         const newTask: TaskModel = {
@@ -38,10 +43,15 @@ export function MainForm() {
             duration: state.config[nextCycleType],
             type: nextCycleType,
         }
-        dispatch({type: TaskActionTypes.START_TASK, payload: newTask})
+
+        showMessage.dismiss()
+        showMessage.info('Tarefa iniciada!')
+        dispatch({ type: TaskActionTypes.START_TASK, payload: newTask })
     }
 
     function handleInterruptTask() {
+        showMessage.dismiss()
+        showMessage.error('Tarefa interrompida!')
         dispatch({ type: TaskActionTypes.INTERRUPT_TASK });
     }
 
@@ -60,7 +70,7 @@ export function MainForm() {
 
 
             <div className='formRow'>
-                <p>Próximo intervalo é de {state.activeTask?.duration ?? 25}min</p>
+                <Tips />
             </div>
 
             {state.currentCycle > 0 && (
