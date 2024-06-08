@@ -10,8 +10,8 @@ export function Cycles() {
   const cycleStep = Array.from({ length: state.currentCycle })
   const cycleDescriotionMap = {
     workTime: 'foco',
-    shortBreakTime: 'descanso curso',
-    longBreakTime: 'descanso curso',
+    shortBreakTime: 'descanso curto',
+    longBreakTime: 'descanso longo',
   };
   return (
     <div className={styles.cycles}>

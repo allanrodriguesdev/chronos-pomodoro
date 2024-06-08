@@ -6,19 +6,42 @@ import { DefaultButton } from "../../components/DefaultButton";
 
 import styles from "./styles.module.css";
 import { useTaskContext } from "../../contexts/TaskContext/useTaskContext";
-import { TaskModel } from "../../models/TaskModel";
-import { TaskStateModel } from "../../models/TaskStateModel";
+
+import { formatDate } from "../../utils/formatDate";
+import { getTaskStatus } from "../../utils/getTaskStatus";
+import { sortTasks, SortTasksOptions } from "../../utils/sortTasks";
+import { useState } from "react";
 
 export function History() {
     const { state } = useTaskContext();
-    const completeDate = (task: TaskModel) => {
-        if(task.completeDate) return 'Completa';
-        if(task.interruptDate) return 'Interrompido';
-        if((task.startDate + (task.duration * 60 * 1000)) > Date.now() && task.id == state.activeTask?.id) {
-            return 'Em andamento';
+    
+    // const sortedTasks = [...state.tasks].sort((a,b) => {
+    //     return b.startDate - a.startDate;
+    // });
+
+    // const sortedTasks = sortTasks({ tasks: state.tasks });
+    const [sortTaskOptions, setSortTaskOptions] = useState<SortTasksOptions>(() => {
+        return {
+            tasks: sortTasks({tasks: state.tasks}),
+            field: "startDate",
+            direction: "desc"
         }
-        return 'Abandonada';
+    });
+
+    // function handleDortTasks({field}: Pick<SortTasksOptions, 'field'>){
+    function handleSortTasks({field}: Omit<SortTasksOptions, 'tasks' | 'direction'>){
+        const newDirection = sortTaskOptions.direction === 'desc' ? 'asc' : 'desc';
+        setSortTaskOptions({
+            tasks: sortTasks({
+                direction: newDirection,
+                tasks: sortTaskOptions.tasks,
+                field,
+            }),
+            direction: newDirection,
+            field
+        });
     }
+
     
     return (
         <MainTemplate>
@@ -40,22 +63,28 @@ export function History() {
                     <table>
                         <thead>
                             <tr>
-                                <th>Tarefa</th>
-                                <th>Duração</th>
-                                <th>Data</th>
+                                <th onClick={() => handleSortTasks({ field: 'name' })} className={styles.thSort}>Tarefa ↕</th>
+                                <th onClick={() => handleSortTasks({ field: 'duration' })} className={styles.thSort}>Duração ↕</th>
+                                <th onClick={() => handleSortTasks({ field: 'startDate' })} className={styles.thSort}>Data ↕</th>
                                 <th>Status</th>
                                 <th>Tipo</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {state.tasks.map((task, indice) => {
+                            {sortTaskOptions.tasks.map((task, indice) => {
+                                const taskTypeDictionary = {
+                                    workTime: 'Foco',
+                                    shortBreakTime: 'Descanso curto',
+                                    longBreakTime: 'Descanso longo',
+                                  };
                                 return (
                                     <tr key={`${indice}_${task.id}`}>
                                         <td>{task.name}</td>
                                         <td>{task.duration}min</td>
-                                        <td>{new Date(task.startDate).toLocaleString('pt-BR')}</td>
-                                        <td>{completeDate(task)}</td>
-                                        <td>Foco</td>
+                                        {/* <td>{new Date(task.startDate).toLocaleString('pt-BR')}</td> */}
+                                        <td>{formatDate(task.startDate)}</td>
+                                        <td>{getTaskStatus(task, state.activeTask)}</td>
+                                        <td>{taskTypeDictionary[task.type]}</td>
                                     </tr>
                                 );
                             })}
