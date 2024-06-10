@@ -7,6 +7,7 @@ export function MessagesContainer({ children }: MessagesContainerProps) {
     return <>
         {children}
         <ToastContainer
+            key={Date.now.toString()}
             position="top-center"
             autoClose={10000}
             hideProgressBar={false}

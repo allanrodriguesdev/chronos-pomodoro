@@ -1,6 +1,7 @@
 import { TaskStateModel } from '../../models/TaskStateModel';
 import { fortmatSecondsToMinutes } from '../../utils/fortmatSecondsToMinutes';
 import { getNextCycle } from '../../utils/getNextCycles';
+import { initialTaskState } from './initialTaskState';
 import { TaskActionModel, TaskActionTypes } from './taskActions';
 
 
@@ -37,7 +38,7 @@ export function taskReducer(
                 }),
             };
         case TaskActionTypes.RESET_STATE: {
-            return state;
+            return {...initialTaskState};
         }
         case TaskActionTypes.COWNT_DOWN: {
             return { 
