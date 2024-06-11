@@ -7,7 +7,7 @@ export const showMessage = {
     warn: (msg: string) => toast.warn(msg),
     warning: (msg: string) => toast.warning(msg),
     info: (msg: string) => toast.success(msg),
-    dismiss: () => toast.dismiss(),
+    dismiss: () => {toast.dismiss(); return showMessage;},
     confirm: (data: string, onClosing: (confirmation: boolean) => void) =>{
         showMessage.dismiss();
         toast(Dialog, {

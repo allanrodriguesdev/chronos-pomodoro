@@ -38,15 +38,15 @@ export function taskReducer(
                 }),
             };
         case TaskActionTypes.RESET_STATE: {
-            return {...initialTaskState};
+            return { ...initialTaskState };
         }
         case TaskActionTypes.COWNT_DOWN: {
-            return { 
-                ...state, 
-                secondsRemaining: action.payload.secondsRemaining, 
+            return {
+                ...state,
+                secondsRemaining: action.payload.secondsRemaining,
                 formattedSecondsRemaining: fortmatSecondsToMinutes(
                     action.payload.secondsRemaining
-                ) 
+                )
             };
         }
         case TaskActionTypes.COMPLETE_TASK:
@@ -61,6 +61,13 @@ export function taskReducer(
                     }
                     return task;
                 }),
+            };
+        case TaskActionTypes.CHANGE_SETTINGS:
+            return {
+                ...state,
+                config: {
+                    ...action.payload
+                }
             };
     }
 
