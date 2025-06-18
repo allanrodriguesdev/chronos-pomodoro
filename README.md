@@ -1,4 +1,4 @@
-# Projeto publicado
+# Projeto publicado (Estudos)
 Para acessar o projeto click no link [https://chronos-pomodoro-six.vercel.app/](https://chronos-pomodoro-six.vercel.app/)
 
 
